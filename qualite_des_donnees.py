@@ -77,6 +77,20 @@ def setValeursMoisErreur(df_erreur):
     values_by_month_error.append(month_temperature)
   return values_by_month_error
 
+def setValeursMoissavukoski(savukoski):
+  values_by_month_savukoski=[]
+  current_month=1
+  month_temperature_savukoski=[]
+  for row in range(1, 365):
+    if(savukoski.iloc[row, 1] != current_month):
+      current_month=current_month+1
+      values_by_month_savukoski.append(month_temperature_savukoski.copy())
+      month_temperature_savukoski=[]
+    temperature_value_savukoski = savukoski.iloc[row, 5]
+    month_temperature_savukoski.append(temperature_value_savukoski.copy())
+  values_by_month_savukoski.append(month_temperature_savukoski.copy())
+  return values_by_month_savukoski
+
 def getValeursMoisErreurCorrection(year):
   values_by_month_ok = []
   for indexMonth,month in enumerate(year,start=0):
@@ -99,16 +113,16 @@ def getValeursMoisErreurCorrection(year):
   values_by_month_ok=year.copy()
   return values_by_month_ok
 
-def getValeurApres(df, rowIndex, columnIndex):
-    nextValue = df.iloc[(rowIndex + 1), columnIndex]
+def getValeurApres(value_error, rowIndex, columnIndex):
+    nextValue = value_error.iloc[(rowIndex + 1), columnIndex]
     if np.isnan(nextValue):
-        return getNextCorrectValue(df, rowIndex+2, columnIndex)
+        return getNextCorrectValue(value_error, rowIndex+2, columnIndex)
     else:
         return nextValue
-def getValeurAvant(df, rowIndex, columnIndex):
-    nextValue = df.iloc[(rowIndex-1), columnIndex]
+def getValeurAvant(value_error, rowIndex, columnIndex):
+    nextValue = value_error.iloc[(rowIndex-1), columnIndex]
     if np.isnan(nextValue):
-        return getNextCorrectValue(df, rowIndex-2, columnIndex)
+        return getNextCorrectValue(value_error, rowIndex-2, columnIndex)
     else:
         return nextValue
 
@@ -152,18 +166,21 @@ def getCourbe(mois,libelle):
   plt.xlabel("Jour") 
   plt.show()
 
-def getCourbeAnnee():
-  t = np.arange(0, 365, 1)
+def getCourbeAnnee(dataset):
+  lenD=0
+  for d in dataset:
+    lenD=lenD+len(d)
+  t = np.arange(0, lenD, 1)
   s = np.sin(2 * 2 * np.pi * t)
   df_temp = pd.DataFrame(columns = ['Température'])
-  for column in df:
-      for value in df[column]:
+  for column in dataset:
+      for value in column:
           df_temp = df_temp.append({'Température':value},ignore_index=True)
   df_temp.dropna()
   fig, ax = plt.subplots()
-  ax.plot(t, flatten(values_by_month),)
+  ax.plot(t, flatten(dataset),)
   ax.set(title='Année')
-  snap_cursor = SnaptoCursor(ax, t, flatten(values_by_month))
+  snap_cursor = SnaptoCursor(ax, t, flatten(dataset))
   fig.canvas.mpl_connect('motion_notify_event', snap_cursor.mouse_move)
   plt.show()
 
@@ -173,22 +190,22 @@ def affichageMois(canvas,fenetre,dataset,yPos):
   minMois=getMinParMois(dataset)
   maxMois=getMaxParMois(dataset)
   ecartType=getEcartType(dataset)
-  canvas.create_text(150,220+yPos,fill="black",font="Times 15 bold",text="Valeurs mensuelles")
   for m in range(0,12):
-    canvas.create_text(150+(m*130),240+yPos,fill="black",font="Times 15 bold",text=mois[m])
-    canvas.create_text(150+(m*130),270+yPos,fill="black",font="Times 13",text="Moyenne : "+str("{:.2f}".format(moyenne[m])))
-    canvas.create_text(150+(m*130),290+yPos,fill="black",font="Times 13",text="Min : "+str("{:.2f}".format(minMois[m])))
-    canvas.create_text(150+(m*130),310+yPos,fill="black",font="Times 13",text="Max : "+str("{:.2f}".format(maxMois[m])))
-    canvas.create_text(150+(m*130),330+yPos,fill="black",font="Times 13",text="Ecart-type : "+str("{:.2f}".format(ecartType[m])))
+    canvas.create_text(280+(m*130),90+yPos,fill="black",font="Times 15 bold",text=mois[m])
+    canvas.create_text(280+(m*130),120+yPos,fill="black",font="Times 13",text="Moyenne : "+str("{:.2f}".format(moyenne[m])))
+    canvas.create_text(280+(m*130),140+yPos,fill="black",font="Times 13",text="Min : "+str("{:.2f}".format(minMois[m])))
+    canvas.create_text(280+(m*130),160+yPos,fill="black",font="Times 13",text="Max : "+str("{:.2f}".format(maxMois[m])))
+    canvas.create_text(280+(m*130),180+yPos,fill="black",font="Times 13",text="Ecart-type : "+str("{:.2f}".format(ecartType[m])))
     b = Button(fenetre, text="Graphique", width=10, command=partial(getCourbe,dataset[m],mois[m]),background="white",foreground="black",activebackground="grey",activeforeground="black")
-    b.place(x=100+(m*130), y=350+yPos, anchor="nw", width=100, height=30)
+    b.place(x=230+(m*130), y=200+yPos, anchor="nw", width=100, height=30)
 
 def affichageValeursAnnées(canvas,fenetre,dataset,yPos):
-  canvas.create_text(900,90+yPos,fill="black",font="Times 15 bold",text="Valeurs annuels")
-  canvas.create_text(900,120+yPos,fill="black",font="Times 13",text="Min : "+str("{:.2f}".format(getMinAnnee(dataset))))
-  canvas.create_text(900,140+yPos,fill="black",font="Times 13",text="Max : "+str("{:.2f}".format(getMaxAnnee(dataset))))
-  b = Button(fenetre, text="Graphique année", width=10, command=getCourbeAnnee,background="white",foreground="black",activebackground="grey",activeforeground="black")
-  b.place(x=850, y=160+yPos, anchor="nw", width=100, height=30)
+  canvas.create_text(150,90+yPos,fill="black",font="Times 15 bold",text="Valeurs annuels")
+  canvas.create_text(150,120+yPos,fill="black",font="Times 13",text="Min : "+str("{:.2f}".format(getMinAnnee(dataset))))
+  canvas.create_text(150,140+yPos,fill="black",font="Times 13",text="Max : "+str("{:.2f}".format(getMaxAnnee(dataset))))
+  b = Button(fenetre, text="Graphique année", width=10, command=partial(getCourbeAnnee,dataset),background="white",foreground="black",activebackground="grey",activeforeground="black")
+  b.place(x=100, y=160+yPos, anchor="nw", width=100, height=30)
+  affichageMois(canvas,fenetre,dataset,yPos)
 
 def affichageFenetre():
   fenetre = Tk()
@@ -196,36 +213,41 @@ def affichageFenetre():
   fenetre.geometry('1800x800')
   canvas=Canvas(fenetre,bg='#FFFFFF',width=800,height=800,scrollregion=(0,0,1500,1500))
   canvas.create_text(900,20,fill="black",font="Times 20 bold",text="Trouver la capitale")
-  canvas.create_text(900,60,fill="black",font="Times 20 bold",text="Données propres")
+  canvas.create_text(900,60,fill="red",font="Times 20 bold",text="Données propres")
   # Tableau propre
 
   affichageValeursAnnées(canvas,fenetre,values_by_month,0)
-  affichageMois(canvas,fenetre,values_by_month,0)
 
   # Tableau erreurs
-  canvas.create_text(900,450,fill="black",font="Times 20 bold",text="Données erreurs")
-  affichageValeursAnnées(canvas,fenetre,values_correction,400)
-  affichageMois(canvas,fenetre,values_correction,400)
+  canvas.create_text(900,250,fill="red",font="Times 20 bold",text="Données erreurs")
+  affichageValeursAnnées(canvas,fenetre,values_correction,200)
+
+  # Tableau savukoski
+  canvas.create_text(900,450,fill="red",font="Times 20 bold",text="Données Savukoski kirkonkylä")
+  affichageValeursAnnées(canvas,fenetre,data_savukoski,400)
 
   canvas.pack(side=LEFT,expand=True,fill=BOTH)
   fenetre.mainloop()
 
 #
-# Partie 1 SI
+# SI
 #
-df = pd.read_excel(r'data/Climat.xlsx', skiprows = 2,  nrows= 32, usecols = 'C:O')
 values = pd.read_excel('data/Climat.xlsx', sheet_name=0)
-df = df.drop(df.index[0])
-df.drop(df.columns[0], axis=1, inplace=True)
-df
 values_by_month=setValeursMois()
 
 #
-# Partie 2 SI-ERROR
+# SI-ERROR
 #
 error = pd.read_excel('data/Climat.xlsx', sheet_name=1)
 values_correction = getValeursMoisErreurCorrection(setValeursMoisErreur(error))
-#print(values_correction)
 
+#
+# Values opendata
+#
+savukoski = pd.read_excel('data/Savukoski_kirkonkyla.xlsx', sheet_name=2)
+data_savukoski=setValeursMoissavukoski(savukoski)
 
+#
+# Affichage
+#
 affichageFenetre()
