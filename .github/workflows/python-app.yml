@@ -24,10 +24,21 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    - name: Build .exe
-      run: |
-        pyinstaller --onefile qualite_des_donnees.py 
+     
+    - name: Package Application Linux
+      uses: JackMcKew/pyinstaller-action-linux@main
+      with:
+        path: ./
+
+    - name: Package Application Windows
+      uses: JackMcKew/pyinstaller-action-windows@main
+      with:
+        path: ./
+        
+   
     - uses: actions/upload-artifact@v2
       with:
         name: qualite_des_donnees
-        path: src/dist
+        path: |
+          dist/linux
+          dist/windows
