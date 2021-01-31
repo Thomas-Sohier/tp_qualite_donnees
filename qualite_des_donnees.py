@@ -95,7 +95,7 @@ def getMinParMois():
   return min_per_month
 
 def getMinAnnee():
-  min_year= min(min_per_month)
+  min_year= min(getMinParMois())
   return min_year
 
 def getMaxParMois():
@@ -105,7 +105,7 @@ def getMaxParMois():
   return max_per_month
 
 def getMaxAnnee():
-  max_year= max(max_per_month)
+  max_year= max(getMaxParMois())
   return max_year
 
 def getCourbe(mois,libelle):
@@ -132,29 +132,37 @@ def getCourbeAnnee():
   plt.show()
 
 def affichageMois(canvas,fenetre):
-  canvas.create_text(900,20,fill="black",font="Times 20 bold",text="Trouver la capitale")
   mois=["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"]
   moyenne=getMoy()
   minMois=getMinParMois()
   maxMois=getMaxParMois()
   ecartType=getEcartType()
-  canvas.create_text(900,90,fill="black",font="Times 20 bold",text="Données propres")
+  canvas.create_text(150,220,fill="black",font="Times 15 bold",text="Valeurs mensuelles")
   for m in range(0,12):
-    canvas.create_text(150+(m*130),140,fill="black",font="Times 15 bold",text=mois[m])
-    canvas.create_text(150+(m*130),170,fill="black",font="Times 13",text="Moyenne : "+str("{:.2f}".format(moyenne[m])))
-    canvas.create_text(150+(m*130),190,fill="black",font="Times 13",text="Min : "+str("{:.2f}".format(minMois[m])))
-    canvas.create_text(150+(m*130),210,fill="black",font="Times 13",text="Max : "+str("{:.2f}".format(maxMois[m])))
-    canvas.create_text(150+(m*130),230,fill="black",font="Times 13",text="Ecart-type : "+str("{:.2f}".format(ecartType[m])))
+    canvas.create_text(150+(m*130),240,fill="black",font="Times 15 bold",text=mois[m])
+    canvas.create_text(150+(m*130),270,fill="black",font="Times 13",text="Moyenne : "+str("{:.2f}".format(moyenne[m])))
+    canvas.create_text(150+(m*130),290,fill="black",font="Times 13",text="Min : "+str("{:.2f}".format(minMois[m])))
+    canvas.create_text(150+(m*130),310,fill="black",font="Times 13",text="Max : "+str("{:.2f}".format(maxMois[m])))
+    canvas.create_text(150+(m*130),330,fill="black",font="Times 13",text="Ecart-type : "+str("{:.2f}".format(ecartType[m])))
     f=lambda:getCourbe(values_by_month[m],mois[m])
     b = Button(fenetre, text="Graphique", width=10, command=partial(getCourbe,values_by_month[m],mois[m]),background="white",foreground="black",activebackground="grey",activeforeground="black")
-    b.place(x=100+(m*130), y=250, anchor="nw", width=100, height=30)
+    b.place(x=100+(m*130), y=350, anchor="nw", width=100, height=30)
 
+def affichageValeursAnnées(canvas,fenetre):
+  canvas.create_text(150,90,fill="black",font="Times 15 bold",text="Valeurs annuels")
+  canvas.create_text(150,120,fill="black",font="Times 13",text="Min : "+str("{:.2f}".format(getMinAnnee())))
+  canvas.create_text(150,140,fill="black",font="Times 13",text="Max : "+str("{:.2f}".format(getMaxAnnee())))
+  b = Button(fenetre, text="Graphique année", width=10, command=getCourbeAnnee,background="white",foreground="black",activebackground="grey",activeforeground="black")
+  b.place(x=100, y=160, anchor="nw", width=100, height=30)
 
 def affichageFenetre():
   fenetre = Tk()
   fenetre.title("Qualité des données")
   fenetre.geometry('1800x800')
   canvas=Canvas(fenetre,bg='#FFFFFF',width=800,height=800,scrollregion=(0,0,1500,1500))
+  canvas.create_text(900,20,fill="black",font="Times 20 bold",text="Trouver la capitale")
+  canvas.create_text(900,60,fill="black",font="Times 20 bold",text="Données propres")
+  affichageValeursAnnées(canvas,fenetre)
   affichageMois(canvas,fenetre)
   canvas.pack(side=LEFT,expand=True,fill=BOTH)
   fenetre.mainloop()
@@ -168,6 +176,3 @@ df.drop(df.columns[0], axis=1, inplace=True)
 df
 values_by_month=setValeursMois()
 affichageFenetre()
-
-b = Button(fenetre, text="Afficher le graphique de l'année", width=10, command=getCourbeAnnee,background="white",foreground="black",activebackground="grey",activeforeground="black")
-b.place(x=300, y=20, anchor="nw", width=200, height=30)
