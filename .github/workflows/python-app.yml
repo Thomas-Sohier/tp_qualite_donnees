@@ -28,12 +28,12 @@ jobs:
     - name: Package Application Windows
       uses: JackMcKew/pyinstaller-action-windows@main
       with:
-        path: /
+        path: .
         
     - name: Package Application Linux
       uses: JackMcKew/pyinstaller-action-linux@main
       with:
-        path: /
+        path: .
         
     - uses: actions/upload-artifact@v2
       with:
