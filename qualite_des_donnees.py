@@ -312,7 +312,7 @@ def affichageFenetre():
   fenetre.geometry('1800x1000')
   canvas=Canvas(fenetre,bg='#FFFFFF',width=800,height=1000,scrollregion=(0,0,1500,1500))
   
-  b = Button(fenetre, text="Comparatif années", width=10, command=getAllCourbesAnnee,background="white",foreground="black",activebackground="grey",activeforeground="black")
+  b = Button(fenetre, text="Comparatif année", width=10, command=getAllCourbesAnnee,background="white",foreground="black",activebackground="grey",activeforeground="black")
   b.place(x=800, y=20, anchor="nw", width=200, height=30)
   canvas.create_text(900,60,fill="red",font="Times 15 bold",text="Données propres")
   # Tableau propre
@@ -368,6 +368,7 @@ data_helsinki=getValeursMoisHelsinki(helsinki)
 #
 oslo= pd.read_csv('data/Oslo.csv')
 data_oslo=getValeursMoisCsv(oslo)
+
 #
 # Affichage
 #
