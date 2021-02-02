@@ -40,7 +40,7 @@ Exemple sur le mois d'aout (Orange : ville à trouver / Bleu : Savukoski):
 
 Le score sur l'année (cf [Calcul du score](###calcul-du-score)) est de 71.11, il est très elevé donc la ville n'est pas la meme
 
-![savukoski](assets/savukoski.PNG)
+![savukoski](assets/Savukoski.PNG)
 
 
 ## De quelle la capitale européenne avez vous eu les données .
